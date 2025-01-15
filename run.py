@@ -6,16 +6,18 @@ from dotenv import load_dotenv
 from llama_index.utils.workflow import draw_all_possible_flows
 from llama_index.llms.openai import OpenAI
 
-from workflow import LlamaWorkflow
+from workflow import PresenterWorkflow
 
 
 async def main():
     load_dotenv()
     llm = OpenAI(model="gpt-4o-mini")
-    workflow = LlamaWorkflow(llm=llm, verbose=True, timeout=240.0)
-    # draw_all_possible_flows(workflow, filename="research_assistant_workflow.html")
+    workflow = PresenterWorkflow(llm=llm, verbose=True, timeout=240.0)
+    # draw_all_possible_flows(workflow, filename="workflow.html")
     topic = sys.argv[1]
-    await workflow.run(query=topic)
+    result = await workflow.run(query=topic)
+    for i, slide in enumerate(result.slides):
+        print(f"{i+1}. Title: {slide.title}\nContent: {slide.atomic_core_idea}\n")
 
 
 if __name__ == "__main__":
