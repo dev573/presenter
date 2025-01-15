@@ -1,0 +1,25 @@
+from typing import List, Any
+
+from llama_index.core.schema import Document
+from llama_index.core.embeddings import BaseEmbedding
+from llama_index.core.llms.llm import LLM
+from llama_index.core.workflow import (
+    step,
+    Context,
+    Workflow,
+    Event,
+    StartEvent,
+    StopEvent,
+)
+from markdown_pdf import MarkdownPdf, Section
+
+
+class LlamaWorkflow(Workflow):
+    def __init__(
+        self,
+        *args: Any,
+        llm: LLM,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.llm = llm
