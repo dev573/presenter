@@ -131,8 +131,10 @@ class PresenterVideoCreaterWorkflow(Workflow):
             for i in range(num_slides)
         ]
         presentation_video_file = os.path.join(presentation_dir, "presentation.mp4")
+        ffmpeg_command = generate_ffmpeg_command(clips, presentation_video_file)
+        print(ffmpeg_command)
         subprocess.run(
-            shlex.split(generate_ffmpeg_command(clips, presentation_video_file)),
+            shlex.split(ffmpeg_command),
         )
         print(f'\n> Presentation video created: "open {presentation_video_file}"\n')
         return StopEvent(result="Presentation video created")
