@@ -237,7 +237,17 @@ class PresenterWorkflow(Workflow):
         )
 
         print("\n> Exporting presentation to PDF...\n")
-        subprocess.run(["decktape", "--headless=true", "reveal", html_file, pdf_file])
+        subprocess.run(
+            [
+                "decktape",
+                "--headless=true",
+                "--screenshots",
+                "--screenshots-directory=.",
+                "reveal",
+                html_file,
+                pdf_file,
+            ]
+        )
         print(f'\n> Exported presentation to PDF. Open it using "open {pdf_file}"\n')
 
         return StopEvent(result=presentation_folder)

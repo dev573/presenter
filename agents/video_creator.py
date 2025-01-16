@@ -1,4 +1,5 @@
-from typing import Any, List
+from typing import Any
+import subprocess
 import os
 import pickle
 
@@ -13,6 +14,7 @@ from llama_index.core.workflow import (
 from llama_index.core.workflow.retry_policy import ConstantDelayRetryPolicy
 
 from models import PresentationStructure
+from agents.narrator import narrate
 
 
 class NarrationRequestReceived(Event):
@@ -25,6 +27,7 @@ class SlideNarrated(Event):
 
 class SlideClipCreated(Event):
     slide_index: int
+    clip_file: str
 
 
 class PresenterVideoCreaterWorkflow(Workflow):
@@ -64,5 +67,73 @@ class PresenterVideoCreaterWorkflow(Workflow):
         presentation_dir = await ctx.get("presentation_dir")
         slide_dir = os.path.join(presentation_dir, f"slide_{slide_index}")
         narration_file = os.path.join(slide_dir, "narration.txt")
+        narration_audio_file = os.path.join(slide_dir, "narration.mp3")
+        if os.path.exists(narration_audio_file):
+            return SlideNarrated(slide_index=slide_index)
         with open(narration_file, "r") as f:
             narration = f.read()
+        await narrate(narration, self.voice, self.model, narration_audio_file)
+        return SlideNarrated(slide_index=slide_index)
+
+    @step(num_workers=5, retry_policy=ConstantDelayRetryPolicy())
+    async def create_slide_clip(
+        self, ctx: Context, ev: SlideNarrated
+    ) -> SlideClipCreated:
+        slide_index = ev.slide_index
+        presentation_dir = await ctx.get("presentation_dir")
+        slide_dir = os.path.join(presentation_dir, f"slide_{slide_index}")
+        slide_clip_file = os.path.join(slide_dir, "clip.mp4")
+        slide_ss_file = os.path.join(
+            presentation_dir, f"presentation_{slide_index+1}_1280x720.png"
+        )
+        slide_audio_file = os.path.join(slide_dir, "narration.mp3")
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-loop",
+                "1",
+                "-i",
+                slide_ss_file,
+                "-i",
+                slide_audio_file,
+                "-c:v libx264 -c:a aac -b:a 192k -shortest -t",
+                "$(($(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 test.mp3) / 1.4 + 0.5))",
+                "-vf",
+                '"format=yuv420p"',
+                '-filter:a "atempo=1.4"',
+                slide_clip_file,
+            ]
+        )
+        print(f"\n> Created clip for slide_{slide_index}\n")
+        return SlideClipCreated(slide_index=slide_index, clip_file=slide_clip_file)
+
+    @step
+    async def combine_clips(self, ctx: Context, ev: SlideClipCreated) -> StopEvent:
+        num_slides = await ctx.get("num_slides")
+        presentation_dir = await ctx.get("presentation_dir")
+        events = ctx.collect_events(ev, [SlideClipCreated] * num_slides)
+        if not events:
+            return None
+        all_clips_file = os.path.join(presentation_dir, "clips.txt")
+        clips = [f"file 'slide_{i}/clip.mp4'" for i in range(num_slides)]
+        with open(all_clips_file, "w") as f:
+            f.write("\n".join(clips))
+        presentation_video_file = os.path.join(presentation_dir, "presentation.mp4")
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-f",
+                "concat",
+                "-safe",
+                "0",
+                "-i",
+                all_clips_file,
+                '-filter_complex "xfade=transition=slideleft:duration=1:offset=2"',
+                "-c:v libx264",
+                "-c:a aac -b:a 192k",
+                '-vf "format=yuv420p"',
+                presentation_video_file,
+            ]
+        )
+        print(f'\n> Presentation video created: "open {presentation_video_file}"\n')
+        return StopEvent(result="Presentation video created")
