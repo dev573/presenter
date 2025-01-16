@@ -168,3 +168,24 @@ class PresenterWorkflow(Workflow):
         print("\n> Rendering  diagrams...\n")
         presentation_file = os.path.join(presentation_folder, "presentation.md")
         subprocess.run(["mmdc", "-i", template_file, "-o", presentation_file])
+        media_dir = os.path.join(presentation_folder, "media")
+        if not os.path.exists(media_dir):
+            os.makedirs(media_dir)
+        subprocess.run(["cp", "*.svg", media_dir])
+
+        # using mdslides to render presentation
+        print("\n> Rendering presentation...\n")
+        output_dir = os.path.join(presentation_folder, "output")
+        subprocess.run(
+            [
+                "mdslides",
+                presentation_file,
+                "--include",
+                media_dir,
+                "--output_dir",
+                output_dir,
+            ]
+        )
+        print(
+            f"\n> Presentation rendered. Run \"open {os.path.join(output_dir, 'index.html')}\" to view the presentation.\n"
+        )
