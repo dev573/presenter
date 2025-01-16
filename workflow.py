@@ -144,7 +144,11 @@ class PresenterWorkflow(Workflow):
         if os.path.exists(content_file) and os.path.exists(narration_file):
             with open(content_file, "r") as f:
                 content = f.read()
-            return SlideCreated(slide_index=slide_index, content=content)
+            with open(narration_file, "r") as f:
+                narration = f.read()
+            return SlideCreated(
+                slide_index=slide_index, content=content, narration=narration
+            )
         topic = await ctx.get("topic")
         structure = await ctx.get("structure")
         slides_info: List[SlideInfo] = structure.slides
@@ -174,7 +178,10 @@ class PresenterWorkflow(Workflow):
             return None
 
         slide_created_events: List[SlideCreated] = events
-        slides_dict = {ev.slide_index: ev.content for ev in slide_created_events}
+        slides_dict = {
+            ev.slide_index: f"{ev.content}\n\nNote:\n{ev.narration}\n"
+            for ev in slide_created_events
+        }
         slides_list = [slides_dict[i] for i in range(num_slides)]
         slides_separator = "\n\n[comment]: # (!!!)\n\n"
         full_presentation_template = sanitize_markdown(
