@@ -145,8 +145,26 @@ class PresenterWorkflow(Workflow):
     @step
     async def combine_slides(self, ctx: Context, ev: SlideCreated) -> StopEvent:
         num_slides = await ctx.get("num_slides")
+        presentation_folder = await ctx.get("presentation_folder")
         events = ctx.collect_events(ev, [SlideCreated] * num_slides)
         if events is None:
             return None
 
         slide_created_events: List[SlideCreated] = events
+        slides_dict = {ev.slide_index: ev.content for ev in slide_created_events}
+        slides_list = [slides_dict[i] for i in range(num_slides)]
+        slides_separator = "\n\n[comment]: # (!!!)\n\n"
+        full_presentation_template = sanitize_markdown(
+            slides_separator.join(slides_list)
+        )
+        full_presentation_template = (
+            get_presentation_config() + full_presentation_template
+        )
+        template_file = os.path.join(presentation_folder, "presentation_template.md")
+        with open(template_file, "w") as f:
+            f.write(full_presentation_template)
+
+        # using mermaid-cli to render mermaid diagrams
+        print("\n> Rendering  diagrams...\n")
+        presentation_file = os.path.join(presentation_folder, "presentation.md")
+        subprocess.run(["mmdc", "-i", template_file, "-o", presentation_file])
