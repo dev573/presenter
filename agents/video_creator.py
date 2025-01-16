@@ -17,7 +17,6 @@ from llama_index.core.workflow.retry_policy import ConstantDelayRetryPolicy
 
 from models import PresentationStructure
 from agents.narrator import narrate
-from utils import generate_ffmpeg_command
 
 
 class NarrationRequestReceived(Event):
@@ -126,15 +125,18 @@ class PresenterVideoCreaterWorkflow(Workflow):
         events = ctx.collect_events(ev, [SlideClipCreated] * num_slides)
         if not events:
             return None
-        clips = [
-            os.path.join(presentation_dir, f"slide_{i}", "clip.mp4")
-            for i in range(num_slides)
-        ]
+        all_clips_file = os.path.join(presentation_dir, "clips.txt")
+        clips = []
+        for i in range(num_slides):
+            clip_file = os.path.join(f"slide_{i}", "clip.mp4")
+            clips.append(f"file '{clip_file}'")
+        with open(all_clips_file, "w") as f:
+            f.write("\n".join(clips))
         presentation_video_file = os.path.join(presentation_dir, "presentation.mp4")
-        ffmpeg_command = generate_ffmpeg_command(clips, presentation_video_file)
-        print(ffmpeg_command)
         subprocess.run(
-            shlex.split(ffmpeg_command),
+            shlex.split(
+                f"""ffmpeg -f concat -safe 0 -i {all_clips_file} -c copy {presentation_video_file}"""
+            ),
         )
         print(f'\n> Presentation video created: "open {presentation_video_file}"\n')
         return StopEvent(result="Presentation video created")
