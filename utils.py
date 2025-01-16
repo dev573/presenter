@@ -30,4 +30,5 @@ def sanitize_markdown(text: str) -> str:
     result = re.sub(pattern2, r"### ", result, flags=re.M)
     pattern3 = r"!\[.+\]\(\./(.*?\.png)\)"
     result = re.sub(pattern3, r"![diagram](./media/\1)", result, flags=re.M)
-    return result
+    result = result.replace("flowchart TD", "flowchart LR")
+    return result + "\n\n"
