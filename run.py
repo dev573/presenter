@@ -15,7 +15,7 @@ async def main():
     workflow = PresenterWorkflow(llm=llm, verbose=False, timeout=240.0)
     # draw_all_possible_flows(workflow, filename="workflow.html")
     topic = sys.argv[1]
-    result = await workflow.run(query=topic)
+    presentation_folder = await workflow.run(query=topic)
     # for i, slide in enumerate(result.slides):
     #     print(f"{i+1}. Title: {slide.title}\nContent: {slide.atomic_core_idea}\n")
 

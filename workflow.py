@@ -111,12 +111,12 @@ class PresenterWorkflow(Workflow):
             )
 
     @step(num_workers=6)
-    async def create_one_slide(
+    async def compose_one_slide(
         self, ctx: Context, ev: ComposeSlideRequestReceived
     ) -> SlideCreated:
         presentation_folder = await ctx.get("presentation_folder")
         slide_folder = os.path.join(presentation_folder, f"slide_{slide_index}")
-        content_file = os.path.join(slide_folder, "content.md")
+        content_file = os.path.join(slide_folder, "content_template.md")
         narration_file = os.path.join(slide_folder, "narration.txt")
         if os.path.exists(content_file) and os.path.exists(narration_file):
             with open(content_file, "r") as f:
@@ -165,7 +165,7 @@ class PresenterWorkflow(Workflow):
             f.write(full_presentation_template)
 
         # using mermaid-cli to render mermaid diagrams
-        print("\n> Rendering  diagrams...\n")
+        print("\n> Rendering diagrams...\n")
         presentation_file = os.path.join(presentation_folder, "presentation.md")
         subprocess.run(["mmdc", "-i", template_file, "-o", presentation_file])
         media_dir = os.path.join(presentation_folder, "media")
@@ -189,3 +189,5 @@ class PresenterWorkflow(Workflow):
         print(
             f"\n> Presentation rendered. Run \"open {os.path.join(output_dir, 'index.html')}\" to view the presentation.\n"
         )
+
+        return StopEvent(result=presentation_folder)
