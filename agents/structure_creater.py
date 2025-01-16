@@ -22,6 +22,7 @@ Be concise: Avoid overloading slides with text or data. Stick to one atomic core
 Incorporate emotion: Make your audience feel something—excitement, curiosity, or inspiration.
 Use data wisely: Visualize key stats (charts, infographics) but don’t overwhelm with too much detail.
 Minimal Text: Use bullet points sparingly (6x6 rule: no more than 6 words per line and 6 lines per slide).
+The first slide should only contain the title and optionally a diagram, nothing else.
 EACH SLIDE MUST CONTAIN ONE ATOMIC CORE IDEA, and the content of each slide can be narrated in 40-50 seconds.
 
 Now read these guidlines thoroughly and you will create the best presentation structure on the topic: "{topic}"

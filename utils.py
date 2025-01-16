@@ -1,6 +1,6 @@
 import re
 
-PRESENTATION_CONFIG = """[comment]: # (THEME = dracula)
+PRESENTATION_CONFIG = """
 [comment]: # (CODE_THEME = base16/zenburn)
 [comment]: # (controls: true)
 [comment]: # (keyboard: true)
@@ -28,6 +28,6 @@ def sanitize_markdown(text: str) -> str:
     )
     pattern2 = r"^(#{1,2})\s"
     result = re.sub(pattern2, r"### ", result, flags=re.M)
-    pattern3 = r"!\[.+\]\(\./(.*?\.svg)\)"
-    result = re.sub(pattern3, r"![diagram](./media/\1)", result)
+    pattern3 = r"!\[.+\]\(\./(.*?\.png)\)"
+    result = re.sub(pattern3, r"![diagram](./media/\1)", result, flags=re.M)
     return result
