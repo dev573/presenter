@@ -7,6 +7,7 @@ from llama_index.utils.workflow import draw_all_possible_flows
 from llama_index.llms.openai import OpenAI
 
 from workflow import PresenterWorkflow
+from agents.video_creator import PresenterVideoCreaterWorkflow
 
 
 async def main():
@@ -18,6 +19,10 @@ async def main():
     presentation_folder = await workflow.run(query=topic)
     # for i, slide in enumerate(result.slides):
     #     print(f"{i+1}. Title: {slide.title}\nContent: {slide.atomic_core_idea}\n")
+    # video_creator_workflow = PresenterVideoCreaterWorkflow(
+    #     model="eleven_flash_v2_5", voice="9BWtsMINqrJLrRacOk9x"
+    # )
+    # await video_creator_workflow.run(presentation_folder=presentation_folder)
 
 
 if __name__ == "__main__":

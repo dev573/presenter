@@ -68,6 +68,7 @@ class PresenterVideoCreaterWorkflow(Workflow):
         slide_dir = os.path.join(presentation_dir, f"slide_{slide_index}")
         narration_file = os.path.join(slide_dir, "narration.txt")
         narration_audio_file = os.path.join(slide_dir, "narration.mp3")
+        print(f"\n> Narrating slide_{slide_index}\n")
         if os.path.exists(narration_audio_file):
             return SlideNarrated(slide_index=slide_index)
         with open(narration_file, "r") as f:
