@@ -16,13 +16,14 @@ async def main():
     workflow = PresenterWorkflow(llm=llm, verbose=False, timeout=240.0)
     # draw_all_possible_flows(workflow, filename="workflow.html")
     topic = sys.argv[1]
-    presentation_folder = await workflow.run(query=topic)
+    # presentation_folder = await workflow.run(query=topic)
+    presentation_folder = "presentations/widevine"
     # for i, slide in enumerate(result.slides):
     #     print(f"{i+1}. Title: {slide.title}\nContent: {slide.atomic_core_idea}\n")
-    # video_creator_workflow = PresenterVideoCreaterWorkflow(
-    #     model="eleven_flash_v2_5", voice="9BWtsMINqrJLrRacOk9x"
-    # )
-    # await video_creator_workflow.run(presentation_folder=presentation_folder)
+    video_creator_workflow = PresenterVideoCreaterWorkflow(
+        model="eleven_flash_v2_5", voice="9BWtsMINqrJLrRacOk9x"
+    )
+    await video_creator_workflow.run(presentation_folder=presentation_folder)
 
 
 if __name__ == "__main__":

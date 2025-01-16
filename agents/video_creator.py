@@ -56,7 +56,7 @@ class PresenterVideoCreaterWorkflow(Workflow):
         await ctx.set("structure", structure)
         slides = structure.slides
         await ctx.set("num_slides", len(slides))
-        for i in slides:
+        for i in range(len(slides)):
             ctx.send_event(NarrationRequestReceived(slide_index=i))
 
     @step(num_workers=5, retry_policy=ConstantDelayRetryPolicy())
