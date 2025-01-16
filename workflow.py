@@ -1,7 +1,7 @@
+import os
+import subprocess
 from typing import Any
 
-from llama_index.core.schema import Document
-from llama_index.core.embeddings import BaseEmbedding
 from llama_index.core.llms.llm import LLM
 from llama_index.core.workflow import (
     step,
@@ -12,10 +12,12 @@ from llama_index.core.workflow import (
     StopEvent,
 )
 
-from models import PresentationStructure, StructureFeedback
+from models import PresentationStructure, StructureFeedback, Slide, SlideInfo
 from agents.structure_creater import create_presentation_structure
 from agents.structure_validator import validate_presentation_structure
 from agents.structure_updater import update_presentation_structure
+from agents.slide_maker import compose_slide
+from utils import get_presentation_config, get_safe_foldername, sanitize_markdown
 
 
 class StructureRequestReceived(Event):
@@ -35,10 +37,14 @@ class StructureFinalized(Event):
     structure: PresentationStructure
 
 
+class ComposeSlideRequestReceived(Event):
+    slide_index: int
+    slide_info: SlideInfo
+
+
 class SlideCreated(Event):
     slide_index: int
     content: str
-    narration: str
 
 
 class PresenterWorkflow(Workflow):
@@ -55,6 +61,10 @@ class PresenterWorkflow(Workflow):
     async def start(self, ctx: Context, ev: StartEvent) -> StructureRequestReceived:
         topic = ev.query
         await ctx.set("topic", topic)
+        presentation_folder = os.path.join("presentations", get_safe_foldername(topic))
+        await ctx.set("presentation_folder", presentation_folder)
+        if not os.path.exists(presentation_folder):
+            os.makedirs(presentation_folder)
         return StructureRequestReceived(topic=topic)
 
     @step
@@ -89,6 +99,20 @@ class PresenterWorkflow(Workflow):
         return StructureFinalized(structure=updated_structure)
 
     @step
-    async def create_slide(self, ctx: Context, ev: StructureFinalized) -> StopEvent:
+    async def create_slides(
+        self, ctx: Context, ev: StructureFinalized
+    ) -> ComposeSlideRequestReceived:
         structure = ev.structure
+        await ctx.set("structure", structure)
+        for slide_index, slide in enumerate(structure.slides):
+            ctx.send_event(
+                ComposeSlideRequestReceived(slide_index=slide_index, slide_info=slide)
+            )
+
+    @step(num_workers=6)
+    async def create_one_slide(
+        self, ctx: Context, ev: ComposeSlideRequestReceived
+    ) -> SlideCreated:
+        structure = ev.structure
+        topic = await ctx.get("topic")
         return StopEvent(result=structure)

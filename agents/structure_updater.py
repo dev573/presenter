@@ -30,9 +30,9 @@ def update_presentation_structure(
             f"\nCore Idea for this slide: {slide.atomic_core_idea}"
         )
     structure_str = "\n\n".join(structure_strs)
-    print(f"Current structure:\n{structure_str}")
-    print(f"Feedback:\n{feedback.is_perfect}")
-    print(f"Feedback:\n{feedback.feedback}")
+    # print(f"Current structure:\n{structure_str}")
+    # print(f"Feedback:\n{feedback.is_perfect}")
+    # print(f"Feedback:\n{feedback.feedback}")
     prompt = PromptTemplate(PRESENTATION_STRUCTURE_UPDATE_PROMPT)
     return llm.structured_predict(
         PresentationStructure,

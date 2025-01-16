@@ -22,7 +22,7 @@ Be concise: Avoid overloading slides with text or data. Stick to one atomic core
 Incorporate emotion: Make your audience feel something—excitement, curiosity, or inspiration.
 Use data wisely: Visualize key stats (charts, infographics) but don’t overwhelm with too much detail.
 Minimal Text: Use bullet points sparingly (6x6 rule: no more than 6 words per line and 6 lines per slide).
-EACH SLIDE MUST CONTAIN ONE ATOMIC CORE IDEA, can the content of each slide can be narrated in 40-50 seconds.
+EACH SLIDE MUST CONTAIN ONE ATOMIC CORE IDEA, and the content of each slide can be narrated in 40-50 seconds.
 
 Now read these guidlines thoroughly and you will create the best presentation structure on the topic: "{topic}"
 Figure out how many slides there should be and what should be on each slide. EACH SLIDE MUST CONTAIN ONE ATOMIC CORE IDEA. You MUST NOT make the contents of the slides too broad or too detailed. Break down broad topics into smaller atomic slides. More slides are better than few broad slides. Make sure the content of each slide can be narrated in 40-50 seconds. Now give me the title and core atomic idea for all the slides in the presentation in order. Your structure will be critiqued by the best presentation experts in the world. So make sure you follow the guidelines and make the structure perfect. The most important thing is to make sure that the content of each slide are atomic and can be narrated in 40-50 seconds.
