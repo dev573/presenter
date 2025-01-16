@@ -116,7 +116,10 @@ class PresenterVideoCreaterWorkflow(Workflow):
         if not events:
             return None
         all_clips_file = os.path.join(presentation_dir, "clips.txt")
-        clips = [f"file 'slide_{i}/clip.mp4'" for i in range(num_slides)]
+        clips = []
+        for i in range(num_slides):
+            clip_file = os.path.join(presentation_dir, f"slide_{i}", "clip.mp4")
+            clips.append(f"file '{clip_file}'")
         with open(all_clips_file, "w") as f:
             f.write("\n".join(clips))
         presentation_video_file = os.path.join(presentation_dir, "presentation.mp4")
