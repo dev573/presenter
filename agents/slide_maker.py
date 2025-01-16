@@ -29,7 +29,6 @@ async def compose_slide(
 ) -> Slide:
     title = slide_info.title
     core_idea = slide_info.atomic_core_idea
-    print(f"\n> Creating slide: {title}...\n")
     prompt = PromptTemplate(COMPOSE_SLIDE_PROMPT)
     return await llm.astructured_predict(
         Slide,

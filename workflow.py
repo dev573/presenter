@@ -132,6 +132,8 @@ class PresenterWorkflow(Workflow):
         self, ctx: Context, ev: ComposeSlideRequestReceived
     ) -> SlideCreated:
         slide_index = ev.slide_index
+        slide_info = ev.slide_info
+        print(f"\n> Creating slide: {slide_info.title}...\n")
         presentation_folder = await ctx.get("presentation_folder")
         slide_folder = os.path.join(presentation_folder, f"slide_{slide_index}")
         if not os.path.exists(slide_folder):
@@ -142,7 +144,6 @@ class PresenterWorkflow(Workflow):
             with open(content_file, "r") as f:
                 content = f.read()
             return SlideCreated(slide_index=slide_index, content=content)
-        slide_info = ev.slide_info
         topic = await ctx.get("topic")
         structure = await ctx.get("structure")
         slides_info: List[SlideInfo] = structure.slides
