@@ -1,6 +1,6 @@
 import os
 import subprocess
-from typing import Any
+from typing import Any, List
 
 from llama_index.core.llms.llm import LLM
 from llama_index.core.workflow import (
@@ -104,6 +104,7 @@ class PresenterWorkflow(Workflow):
     ) -> ComposeSlideRequestReceived:
         structure = ev.structure
         await ctx.set("structure", structure)
+        await ctx.set("num_slides", len(structure.slides))
         for slide_index, slide in enumerate(structure.slides):
             ctx.send_event(
                 ComposeSlideRequestReceived(slide_index=slide_index, slide_info=slide)
@@ -113,6 +114,39 @@ class PresenterWorkflow(Workflow):
     async def create_one_slide(
         self, ctx: Context, ev: ComposeSlideRequestReceived
     ) -> SlideCreated:
-        structure = ev.structure
+        presentation_folder = await ctx.get("presentation_folder")
+        slide_folder = os.path.join(presentation_folder, f"slide_{slide_index}")
+        content_file = os.path.join(slide_folder, "content.md")
+        narration_file = os.path.join(slide_folder, "narration.txt")
+        if os.path.exists(content_file) and os.path.exists(narration_file):
+            with open(content_file, "r") as f:
+                content = f.read()
+            return SlideCreated(slide_index=slide_index, content=content)
+        slide_index = ev.slide_index
+        slide_info = ev.slide_info
         topic = await ctx.get("topic")
-        return StopEvent(result=structure)
+        structure = await ctx.get("structure")
+        slides_info: List[SlideInfo] = structure.slides
+        num_slides = await ctx.get("num_slides")
+        prev_next_info = ""
+        if slide_index > 0:
+            prev_next_info += f'The previous slide is "{slides_info[slide_index-1].title}"({slides_info[slide_index-1].atomic_core_idea}). '
+        if slide_index < num_slides - 1:
+            prev_next_info += f'The next slide is "{slides_info[slide_index+1].title}"({slides_info[slide_index+1].atomic_core_idea}). '
+        slide = await compose_slide(topic, slide_info, prev_next_info, self.llm)
+        content = slide.content
+        narration = slide.narration
+        with open(content_file, "w") as f:
+            f.write(content)
+        with open(narration_file, "w") as f:
+            f.write(narration)
+        return SlideCreated(slide_index=slide_index, content=content)
+
+    @step
+    async def combine_slides(self, ctx: Context, ev: SlideCreated) -> StopEvent:
+        num_slides = await ctx.get("num_slides")
+        events = ctx.collect_events(ev, [SlideCreated] * num_slides)
+        if events is None:
+            return None
+
+        slide_created_events: List[SlideCreated] = events
