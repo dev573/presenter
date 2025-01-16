@@ -23,7 +23,7 @@ async def main():
     video_creator_workflow = PresenterVideoCreaterWorkflow(
         model="eleven_flash_v2_5", voice="9BWtsMINqrJLrRacOk9x"
     )
-    await video_creator_workflow.run(presentation_folder=presentation_folder)
+    await video_creator_workflow.run(presentation_dir=presentation_folder)
 
 
 if __name__ == "__main__":
