@@ -47,6 +47,7 @@ class ComposeSlideRequestReceived(Event):
 class SlideCreated(Event):
     slide_index: int
     content: str
+    narration: str
 
 
 class PresenterWorkflow(Workflow):
@@ -160,7 +161,9 @@ class PresenterWorkflow(Workflow):
             f.write(content)
         with open(narration_file, "w") as f:
             f.write(narration)
-        return SlideCreated(slide_index=slide_index, content=content)
+        return SlideCreated(
+            slide_index=slide_index, content=content, narration=narration
+        )
 
     @step
     async def combine_slides(self, ctx: Context, ev: SlideCreated) -> StopEvent:
@@ -210,6 +213,8 @@ class PresenterWorkflow(Workflow):
         # using mdslides to render presentation
         print("\n> Rendering presentation...\n")
         output_dir = os.path.join(presentation_folder, "output")
+        html_file = os.path.join(output_dir, "index.html")
+        pdf_file = os.path.join(presentation_folder, "presentation.pdf")
         subprocess.run(
             [
                 "mdslides",
@@ -221,7 +226,11 @@ class PresenterWorkflow(Workflow):
             ]
         )
         print(
-            f"\n> Presentation rendered. Run \"open {os.path.join(output_dir, 'index.html')}\" to view the presentation.\n"
+            f'\n> Presentation rendered. Run "open {html_file}" to view the presentation.\n'
         )
+
+        print("\n> Exporting presentation to PDF...\n")
+        subprocess.run(["decktape", "--headless=true", "reveal", html_file, pdf_file])
+        print('\n> Exported presentation to PDF. Open it using "open {pdf_file}"\n')
 
         return StopEvent(result=presentation_folder)
