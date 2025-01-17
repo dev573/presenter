@@ -86,6 +86,7 @@ class PresenterVideoCreaterWorkflow(Workflow):
         presentation_dir = await ctx.get("presentation_dir")
         slide_dir = os.path.join(presentation_dir, f"slide_{slide_index}")
         slide_clip_file = os.path.join(slide_dir, "clip.mp4")
+        print(f"\n> Creating clip for slide_{slide_index}\n")
         if os.path.exists(slide_clip_file):
             return SlideClipCreated(slide_index=slide_index, clip_file=slide_clip_file)
         slide_ss_file = os.path.join(
@@ -114,6 +115,8 @@ class PresenterVideoCreaterWorkflow(Workflow):
             shlex.split(
                 f"""ffmpeg -loop 1 -i {slide_ss_file} -i {slide_audio_file} -c:v libx264 -c:a aac -b:a 192k -shortest -t {duration} -vf "format=yuv420p" -filter:a "atempo=1.4" {slide_clip_file}"""
             ),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
         print(f"\n> Created clip for slide_{slide_index}\n")
         return SlideClipCreated(slide_index=slide_index, clip_file=slide_clip_file)
