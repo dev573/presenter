@@ -30,7 +30,10 @@ async def main():
     topic = args.topic
     presentation_dir = await workflow.run(query=topic)
     video_creator_workflow = PresenterVideoCreaterWorkflow(
-        model="eleven_flash_v2_5", voice="9BWtsMINqrJLrRacOk9x"
+        model="eleven_flash_v2_5",
+        voice="9BWtsMINqrJLrRacOk9x",
+        verbose=False,
+        timeout=240.0,
     )
     if args.export_video:
         print("\n> Exporting video of the presentation with voiceover...\n")

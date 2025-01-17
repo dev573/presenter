@@ -11,7 +11,7 @@
 - [x] **Generate audio narrations** from speech 🎙️ (using ElevenLabs)
 - [x] **Render full video presentations** 🎥 with all the slides and voiceover (using FFmpeg)
 
-## Video Overview of the multi-agent setup
+## Video Demo with overview of the multi-agent setup
 
 [![]()]()
 
@@ -26,10 +26,21 @@
 
 ## How to use
 
+- First install the required tools
+
+```bash
+python -m pip install git+https://gitlab.com/da_doomer/markdown-slides.git
+npm install -g @mermaid-js/mermaid-cli
+npm install -g decktape
+npm install -g puppeteer
+puppeteer browsers install chrome
+```
+
 - Clone the repo
 
 ```bash
-
+git clone https://github.com/rsrohan99/presenter.git
+cd presenter
 ```
 
 - Install dependencies
@@ -38,14 +49,20 @@
 pip install -r requirements.txt
 ```
 
-- Create `.env` file and add `OPENAI_API_KEY` and `TAVILY_API_KEY`
+- Create `.env` file and add `OPENAI_API_KEY` and `ELEVENLABS_API_KEY`
 
 ```bash
 cp .env.example .env
 ```
 
-- Run the workflow with the topic to research
+- Run the workflow with the topic to create the presentation on
 
 ```bash
-python run.py ""
+python run.py "observer design pattern"
+```
+
+- Add `--export-video` argument to generate a full video of the presentation with voiceover.
+
+```bash
+python run.py "observer design pattern" --export-video
 ```
