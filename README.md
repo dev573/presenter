@@ -36,6 +36,8 @@ npm install -g puppeteer
 puppeteer browsers install chrome
 ```
 
+- Install FFmpeg for your operating system from [here](https://www.ffmpeg.org/download.html)
+
 - Clone the repo
 
 ```bash
@@ -66,3 +68,9 @@ python run.py "observer design pattern"
 ```bash
 python run.py "observer design pattern" --export-video
 ```
+
+- After running the workflow, it'll put all the files (slides, video, pdf etc.) inside the `presentations` folder
+- There be a folder for each presentation generated
+- The interactive HTML for the presentation will be at `presentations/<presentation_folder>/output/index.html`
+- The extracted PDF of the presentation will be at `presentations/<presentation_folder>/presentation.pdf`
+- The rendered video with voiceover of the presentation will be at `presentations/<presentation_folder>/presentation.mp4`
