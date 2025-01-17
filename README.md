@@ -8,7 +8,7 @@
 - [x] **Render & View interactive presentations in HTML** 💻 (using markdown-slides & reveal.js)
 - [x] **Intuitive speaker view with scripts** (reveal.js)
 - [x] **Export presentations to PDF** 🖨️ (using DeckTape)
-- [x] **Generate audio narrations** from speech 🎙️ (using ElevenLabs)
+- [x] **Generate audio narrations** from scripts 🎙️ (using ElevenLabs)
 - [x] **Render full video presentations** 🎥 with all the slides and voiceover (using FFmpeg)
 
 ## Video Demo with overview of the multi-agent setup
