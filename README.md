@@ -1,9 +1,9 @@
 # Presenter 🎦
 
-Introducing **Presenter**: The State-of-the-Art Multi-Agent AI Tool that can:
+## Introducing **Presenter**: The State-of-the-Art Multi-Agent AI Tool that can:
 
-- [x] **Create beautiful presentations** for any given topic
-- [x] **Render intuitive & visually appealing diagrams** for slides when needed (using Mermaid)
+- [x] **Create beautiful presentations** for any given topic 🔥
+- [x] **Render intuitive & visually appealing diagrams** 🖼️ for slides when needed (using Mermaid)
 - [x] **Write scripts** for every slide 📜
 - [x] **Render & View interactive presentations in HTML** 💻 (using markdown-slides & reveal.js)
 - [x] **Intuitive speaker view with scripts** (reveal.js)
