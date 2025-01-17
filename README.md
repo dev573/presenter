@@ -26,7 +26,7 @@
 
 ## How to use
 
-- First install the required tools
+- First install the necessary tools
 
 ```bash
 python -m pip install git+https://gitlab.com/da_doomer/markdown-slides.git
