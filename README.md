@@ -13,7 +13,7 @@
 
 ## Video Demo with overview of the multi-agent setup
 
-[![]()]()
+[![Presenter](https://img.youtube.com/vi/q8PAD9IS3Ig/maxresdefault.jpg)](https://www.youtube.com/watch?v=q8PAD9IS3Ig)
 
 ## Tools Used
 
