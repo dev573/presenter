@@ -136,10 +136,13 @@ class PresenterVideoCreaterWorkflow(Workflow):
         with open(all_clips_file, "w") as f:
             f.write("\n".join(clips))
         presentation_video_file = os.path.join(presentation_dir, "presentation.mp4")
+        print("\n> Rendering full presentation video...\n")
         subprocess.run(
             shlex.split(
-                f"""ffmpeg -f concat -safe 0 -i {all_clips_file} -c copy {presentation_video_file}"""
+                f"""ffmpeg -y -f concat -safe 0 -i {all_clips_file} -c copy {presentation_video_file}"""
             ),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
         print(f'\n> Presentation video created: "open {presentation_video_file}"\n')
         return StopEvent(result="Presentation video created")
