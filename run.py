@@ -17,6 +17,7 @@ async def main():
         description="Presenter - Create beautiful presentations using AI.",
         usage="python run.py <topic> [--export-video] [-h]",
     )
+    parser.add_argument("topic", type=str, help="The topic of the presentation")
     parser.add_argument(
         "--export-video",
         action="store_true",
@@ -26,7 +27,7 @@ async def main():
     llm = OpenAI(model="gpt-4o-mini")
     workflow = PresenterWorkflow(llm=llm, verbose=False, timeout=240.0)
     # draw_all_possible_flows(workflow, filename="workflow.html")
-    topic = sys.argv[1]
+    topic = args.topic
     presentation_dir = await workflow.run(query=topic)
     video_creator_workflow = PresenterVideoCreaterWorkflow(
         model="eleven_flash_v2_5", voice="9BWtsMINqrJLrRacOk9x"
