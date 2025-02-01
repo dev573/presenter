@@ -13,7 +13,8 @@ def get_presentation_config() -> str:
 
 
 def get_safe_foldername(topic: str) -> str:
-    return topic.replace(" ", "_").lower()
+    # return topic.replace(" ", "_").lower()
+    return re.sub(r"[^a-zA-Z0-9]", "_", topic).lower()
 
 
 def sanitize_markdown(text: str) -> str:

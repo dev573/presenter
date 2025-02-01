@@ -3,6 +3,8 @@ import subprocess
 import pickle
 from typing import Any, List
 
+from llama_parse import LlamaParse
+from llama_index.core import SimpleDirectoryReader
 from llama_index.core.llms.llm import LLM
 from llama_index.core.workflow import (
     step,
@@ -20,6 +22,14 @@ from agents.structure_validator import validate_presentation_structure
 from agents.structure_updater import update_presentation_structure
 from agents.slide_maker import compose_slide
 from utils import get_presentation_config, get_safe_foldername, sanitize_markdown
+
+
+class DataFolderFound(Event):
+    pass
+
+
+class TopicFound(Event):
+    pass
 
 
 class StructureRequestReceived(Event):
@@ -61,9 +71,35 @@ class PresenterWorkflow(Workflow):
         self.llm = llm
 
     @step
-    async def start(self, ctx: Context, ev: StartEvent) -> StructureRequestReceived:
+    async def start(self, ctx: Context, ev: StartEvent) -> TopicFound | DataFolderFound:
+        data_folder = os.path.join("data")
+        # check if data folder exists and is not empty
+        if os.path.exists(data_folder) and os.listdir(data_folder):
+            await ctx.set("data_folder", data_folder)
+            return DataFolderFound
         topic = ev.query
         await ctx.set("topic", topic)
+        return TopicFound
+
+    @step
+    async def ingest_data_and_find_topic(
+        self, ctx: Context, ev: DataFolderFound
+    ) -> TopicFound:
+        data_folder = os.path.join("data")
+        # read all files in the data folder
+        parser = LlamaParse(result_type="markdown")
+        file_extractor = {".pdf": parser}
+        documents = SimpleDirectoryReader(
+            file_extractor=file_extractor, input_dir=data_folder
+        ).load_data()
+        await ctx.set("topic", topic)
+        return TopicFound
+
+    @step
+    async def prepare_presentation_folder(
+        self, ctx: Context, ev: TopicFound
+    ) -> StructureRequestReceived:
+        topic = await ctx.get("topic")
         presentation_folder = os.path.join("presentations", get_safe_foldername(topic))
         await ctx.set("presentation_folder", presentation_folder)
         if not os.path.exists(presentation_folder):

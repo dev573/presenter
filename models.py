@@ -9,6 +9,13 @@ class SlideInfo(BaseModel):
     )
 
 
+class PresentationStructureWithTitle(BaseModel):
+    title: str = Field(..., description="Title of the presentation")
+    slides: List[SlideInfo] = Field(
+        ..., description="List of slides information in the presentation"
+    )
+
+
 class PresentationStructure(BaseModel):
     slides: List[SlideInfo] = Field(
         ..., description="List of slides information in the presentation"

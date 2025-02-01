@@ -4,3 +4,4 @@ llama-index-llms-openai==0.2.9
 llama-index-utils-workflow==0.2.1
 python-dotenv==1.0.1
 elevenlabs==1.50.3
+llama-parse==0.5.20
