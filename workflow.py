@@ -21,6 +21,7 @@ from agents.structure_creater import create_presentation_structure
 from agents.structure_validator import validate_presentation_structure
 from agents.structure_updater import update_presentation_structure
 from agents.slide_maker import compose_slide
+from agents.structure_creater_from_data import create_presentation_structure_from_data
 from utils import get_presentation_config, get_safe_foldername, sanitize_markdown
 
 
@@ -92,8 +93,20 @@ class PresenterWorkflow(Workflow):
         documents = SimpleDirectoryReader(
             file_extractor=file_extractor, input_dir=data_folder
         ).load_data()
-        await ctx.set("topic", topic)
-        return TopicFound
+        presentation_structure_with_title = create_presentation_structure_from_data(
+            documents, self.llm
+        )
+        await ctx.set("topic", presentation_structure_with_title.title)
+        structure = PresentationStructure(
+            slides=presentation_structure_with_title.slides
+        )
+
+        structure_file = os.path.join(
+            await ctx.get("presentation_folder"), "structure.pkl"
+        )
+        with open(structure_file, "wb") as f:
+            pickle.dump(structure, f)
+        return StructureFinalized(structure=structure)
 
     @step
     async def prepare_presentation_folder(
